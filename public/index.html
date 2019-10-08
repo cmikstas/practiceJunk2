@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>What to eat?</title>
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <!-- chris - firebase -->
+  <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
+  <html lang="en">
+</head>
+
+<body>
+
+  <!-- Head -->
+  <div class="container mx-auto">
+    <div class=" text-center  mb-4">
+      <div class="w-auto bg-gray-500 h-12">Head</div>
+    </div>
+
+    <!-- Location and Search Term Divs -->
+    <div class="flex mb-4">
+      <div class="w-1/4 bg-gray-400 h-64">
+        Enter Location
+        <input id="locationInput"
+          class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
+          type="search" placeholder="Salt Lake, Pheonix...">
+        Enter Type of Food
+        <input id="termInput"
+          class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
+          type="search" placeholder="Peruvian,Pizza...">
+        <button id="search"
+          class="mt-1 bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
+          Search
+        </button>
+      </div>
+
+      <!-- Map/Results Div -->
+      <div id="results" class="w-1/2 overflow-hidden overflow-y-scroll ml-1 bg-gray-500 h-64">Results</div>
+      <div id="map" class="w-1/2 ml-1 bg-gray-500 h-64">Map</div>
+
+    </div>
+
+
+    <!-- Button Div -->
+    <div class="flex mb-4">
+      <div class="w-1/4 bg-gray-400 h-64">
+        <button id="beginPollBtn"
+          class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+          Begin Poll
+        </button>
+        <button id="resetPoll"
+          class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+          Start New
+        </button>
+        <div id="timer">
+
+        </div>
+      </div>
+      <div id="pollDiv" class="flex row w-3/4 ml-1 bg-gray-500 h-64">
+
+      </div>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCK4EWTo5MHbt_OTstSiYYGKw5twoR8xuk&libraries=places&callback=initMap"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="assets/javascript/project.js"></script>
+
+</body>
+
+</html>

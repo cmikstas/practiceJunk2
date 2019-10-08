@@ -1,0 +1,25 @@
+{
+  "name": "projectUno",
+  "version": "1.0.0",
+  "description": "Project One for the U of U Bootcamp",
+  "main": "index.js",
+  "scripts": {
+    "build": "postcss tailwind.css -o public/assets/style/tailwind.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonvictory/projectUno.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonvictory/projectUno/issues"
+  },
+  "homepage": "https://github.com/jonvictory/projectUno#readme",
+  "dependencies": {
+    "autoprefixer": "^9.6.1",
+    "postcss-cli": "^6.1.3",
+    "tailwindcss": "^1.1.2"
+  }
+}
