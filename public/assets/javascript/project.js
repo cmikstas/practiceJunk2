@@ -18,6 +18,7 @@ var map;
 // boolean that is used to disable checkbox clicks and search button while poll is running
 var isPollRunning = false;
 
+/***********************************************************/
 // boolean that disables voting buttons after a vote is cast
 var isVoteCast = false;
 
@@ -25,6 +26,7 @@ var isVoteCast = false;
 var votes0 = 0;
 var votes1 = 0;
 var votes2 = 0;
+/***********************************************************/
 
 // FIREBASE
 // code for loading Firebase
@@ -292,36 +294,42 @@ $(document).ready(function () {
 
     $("#beginPollBtn").on("click", function (event)
     {   
-        // keeps button disabled until two selections are made
+        // keeps button disabled until three selections are made
         if (resultsSelect !== 3)
         {
             console.log("button disabled");
             return;
         }
 
-        if(isPollRunning === true)
+        if (isPollRunning === true)
         {
             console.log("button disabled");
             return;
         }
 
+        /********************************************************/
+        // pushes up to firebase and changes boolean to true
         var ref = firebase.database().ref("projectUno");
         ref.remove();
 
         database.ref("projectUno/pollStatus").push({isPollRunning: true});
-    
+        /********************************************************/
     });
 
+    /************************************************************/
+    // pushes up to firebase and changes boolean to false
     $("#resetPoll").on("click", function (event)
     {
         var ref = firebase.database().ref("projectUno");
         ref.remove();
 
         database.ref("projectUno/pollStatus").push({isPollRunning: false});
-
     });
+    /************************************************************/
 
-    //this function will make sure that all the reset items hit every computer
+    /*****************************************************************************/
+    // this function will make sure that all the reset items hit every computer
+    // this happens because the buttons push to firebase and trigger event listener
     database.ref("projectUno/pollStatus").on("child_added", function(childSnapshot)
     {
         var cs = childSnapshot.val();
@@ -359,6 +367,7 @@ $(document).ready(function () {
             database.ref("projectUno/pollChoices").push(selectionArray);
         }
     });
+    /*********************************************************************************/
 
     database.ref("projectUno/pollChoices").on("child_added", function(childSnapshot)
     {
@@ -402,6 +411,8 @@ $(document).ready(function () {
         console.log(restRating2);
         //console.log(restURL2);
 
+        /***********************************/
+        // removes markers and then readds to all computers that log in
         removeAllMarkers();
 
         for (let i = 0; i < cs.length; i++)
@@ -413,12 +424,14 @@ $(document).ready(function () {
                 lat:  cs[i].lat,
             });
         }
+        /*************************************/
 
         // code for option 1
         var voteName0 = $("<p>");
         var voteAddress0 = $("<p>");
         var voteRating0 = $("<p>");
         var voteURL0 = $("<p>");
+        // variables for tracking votes
         var voteCount0 = $("<p>").text("Votes: " + votes0);
         voteCount0.attr("id", "voteP0");
 
@@ -428,6 +441,7 @@ $(document).ready(function () {
         voteButton0.text("Vote");
         var voteLabel0 = $("<div>");
         var voteDiv0 = $("<div>").addClass("mx-2 w-1/3 m-auto h-48 bg-blue-200 border border-white rounded");
+        // class added to control changes when vote is cast and when time runs out
         voteDiv0.attr("id", "voteDiv0");
 
         voteName0.text(restName0);
@@ -440,6 +454,7 @@ $(document).ready(function () {
         voteLabel0.append(voteRating0);
         //voteLabel0.append(voteURL0);
         voteLabel0.append(voteButton0);
+        // coding for adding vote count
         voteLabel0.append(voteCount0);
         voteDiv0.append(voteLabel0);
         $("#pollDiv").append(voteDiv0);
@@ -449,6 +464,7 @@ $(document).ready(function () {
         var voteAddress1 = $("<p>");
         var voteRating1 = $("<p>");
         var voteURL1 = $("<p>");
+        //
         var voteCount1 = $("<p>").text("Votes: " + votes1);
         voteCount1.attr("id", "voteP1");
 
@@ -458,6 +474,7 @@ $(document).ready(function () {
         voteButton1.text("Vote");
         var voteLabel1 = $("<div>");
         var voteDiv1 = $("<div>").addClass("w-1/3 m-auto h-48 bg-blue-200 border border-white rounded");
+        //
         voteDiv1.attr("id", "voteDiv1");
 
         voteName1.text(restName1);
@@ -470,6 +487,7 @@ $(document).ready(function () {
         voteLabel1.append(voteRating1);
         //voteLabel1.append(voteURL1);
         voteLabel1.append(voteButton1);
+        //
         voteLabel1.append(voteCount1);
         voteDiv1.append(voteLabel1);
         $("#pollDiv").append(voteDiv1);
@@ -479,6 +497,7 @@ $(document).ready(function () {
         var voteAddress2 = $("<p>");
         var voteRating2 = $("<p>");
         var voteURL2 = $("<p>");
+        //
         var voteCount2 = $("<p>").text("Votes: " + votes2);
         voteCount2.attr("id", "voteP2");
 
@@ -488,6 +507,7 @@ $(document).ready(function () {
         voteButton2.text("Vote");
         var voteLabel2 = $("<div>");
         var voteDiv2 = $("<div>").addClass("mx-2 w-1/3 m-auto h-48 bg-blue-200 border border-white rounded");
+        //
         voteDiv2.attr("id", "voteDiv2");
 
         voteName2.text(restName2);
@@ -500,10 +520,12 @@ $(document).ready(function () {
         voteLabel2.append(voteRating2);
         //voteLabel2.append(voteURL2);
         voteLabel2.append(voteButton2);
+        //
         voteLabel2.append(voteCount2);
         voteDiv2.append(voteLabel2);
         $("#pollDiv").append(voteDiv2);
 
+        /************************************************/
         // code that tracks vote totals
         $(".voteBtn").on("click", function (event)
         {
@@ -515,9 +537,11 @@ $(document).ready(function () {
                 return;
             }
 
+            // setting boolean to true MUST come after if statement or it won't work
             isVoteCast = true;
             $(".voteBtn").addClass("opacity-50 cursor-not-allowed")
 
+            // this refers back to the button click
             if($(this).attr("id") === "0")
             {
                 //console.log("clicks still happening0");
@@ -545,7 +569,7 @@ $(document).ready(function () {
                 $("#voteDiv2").addClass("bg-green-200");
             }
 
-            // this function removes the vote count that is currently store in firebase
+            // this function removes the vote count that is currently stored in firebase
             var ref2 = firebase.database().ref("projectUno/voteCount");
             ref2.remove();
 
@@ -553,6 +577,7 @@ $(document).ready(function () {
             database.ref("projectUno/voteCount").push({votes0, votes1, votes2});
 
         });
+        /******************************************************/
     });
 
     // this code controls adding the updated vote count to the webpage once it hits firebase and the event listener triggers
@@ -595,6 +620,7 @@ function countDown()
     timeString = minutes + ":" + seconds;
 }
 
+/**************************************************/
 // function that is called when timer hits 0
 function voteResult()
 {
@@ -619,3 +645,4 @@ function voteResult()
         $("#voteDiv2").addClass("bg-red-200");
     }
 }
+/******************************************************/
