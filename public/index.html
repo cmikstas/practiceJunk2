@@ -10,6 +10,8 @@
   <!-- chris - firebase -->
   <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=B612&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
   <html lang="en">
 </head>
 
@@ -17,13 +19,14 @@
 
   <!-- Head -->
   <div class="container mx-auto">
-    <div class=" text-center  mb-4">
-      <div class="w-auto bg-gray-500 h-12">Head</div>
+    <div class="w-auto content-center border-black border-4 rounded-lg bg-teal-400 h-auto">
+      <img class="self-center m-auto" src="assets/images/whatdoyouwant.png" alt="">
     </div>
+
 
     <!-- Location and Search Term Divs -->
     <div class="flex mb-4">
-      <div class="w-1/4 bg-gray-400 h-64">
+      <div class="w-1/4 mt-1 p-1 border-black border-4 rounded-lg bg-pink-400 h-64">
         Enter Location
         <input id="locationInput"
           class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
@@ -33,34 +36,36 @@
           class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
           type="search" placeholder="Peruvian,Pizza...">
         <button id="search"
-          class="mt-1 bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-green-500 rounded">
+          class="mt-1 flex bg-teal-500 hover:bg-teal-400 text-white font-bold py-2 px-4 border-b-4 border-teal-700 hover:border-teal-500 rounded">
           Search
         </button>
       </div>
 
       <!-- Map/Results Div -->
-      <div id="results" class="w-1/2 overflow-hidden overflow-y-scroll ml-1 bg-gray-500 h-64">Results</div>
-      <div id="map" class="w-1/2 ml-1 bg-gray-500 h-64">Map</div>
+      <div id="results"
+        class="w-1/2 mt-1 p-1 overflow-hidden overflow-y-scroll ml-1 border-black border-4 rounded-lg bg-pink-400 h-64">
+        Results</div>
+      <div id="map" class="w-1/2 mt-1 border-black border-4 rounded-lg ml-1 bg-gray-500 h-64">Map</div>
 
     </div>
 
 
     <!-- Button Div -->
     <div class="flex mb-4">
-      <div class="w-1/4 bg-gray-400 h-64">
+      <div class="w-1/4 bg-purple-400 border-black border-4 rounded-lg h-64">
         <button id="beginPollBtn"
-          class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+          class="opacity-50 mt-1 cursor-not-allowed bg-pink-500 hover:bg-pink-400 text-white font-bold py-2 px-4 border-b-4 border-pink-700 hover:border-pink-500 rounded">
           Begin Poll
         </button>
         <button id="resetPoll"
-          class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">
+          class="bg-pink-500 mt-1 hover:bg-pink-400 text-white font-bold py-2 px-4 border-b-4 border-pink-700 hover:border-pink-500 rounded">
           Start New
         </button>
-        <div id="timer">
+        <div class="mt-1 text-xl" id="timer">
 
         </div>
       </div>
-      <div id="pollDiv" class="flex row w-3/4 ml-1 bg-gray-500 h-64">
+      <div id="pollDiv" class="flex row w-3/4 ml-1 bg-purple-400 border-black border-4 rounded-lg h-64">
 
       </div>
     </div>

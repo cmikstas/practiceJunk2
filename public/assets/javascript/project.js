@@ -1,11 +1,10 @@
 // GLOBAL VARIABLES
 // variables used for timer function
-var time = 179; // time has to be 1 second less than the time you want to display
+var time = 180; // time has to be 1 second less than the time you want to display
 var minutes = Math.trunc(time / 60);
 var seconds = time % 60;
 var timeString = minutes + ":" + seconds;
 var intervalId;
-
 // variable that will be part of limiting results selection to three
 var resultsSelect = 0;
 
@@ -20,27 +19,27 @@ var isPollRunning = false;
 
 /***********************************************************/
 // boolean that disables voting buttons after a vote is cast
-var isVoteCast = false;
+//var isVoteCast = false;
 
 // variables for incrementing vote count
-var votes0 = 0;
-var votes1 = 0;
-var votes2 = 0;
+//var votes0 = 0;
+//var votes1 = 0;
+//var votes2 = 0;
 /***********************************************************/
 
 // FIREBASE
 // code for loading Firebase
-var firebaseConfig = 
+var firebaseConfig =
 {
-    apiKey: "AIzaSyAxi3aBaAVwoeWzOhYOqe-C8R30NCZQE6k",
-    authDomain: "votefirebase-3de2b.firebaseapp.com",
-    databaseURL: "https://votefirebase-3de2b.firebaseio.com",
-    projectId: "votefirebase-3de2b",
-    storageBucket: "votefirebase-3de2b.appspot.com",
-    messagingSenderId: "184385654680",
-    appId: "1:184385654680:web:cecbe4a0812748043465ed"
+    apiKey: "AIzaSyCZmpMUDLA55Li2JKm8K42Jv_gCAG_v5Lg",
+    authDomain: "bootcamp-project-09242019.firebaseapp.com",
+    databaseURL: "https://bootcamp-project-09242019.firebaseio.com",
+    projectId: "bootcamp-project-09242019",
+    storageBucket: "bootcamp-project-09242019.appspot.com",
+    messagingSenderId: "344953998725",
+    appId: "1:344953998725:web:119bcabddb32ce5dbd48ec"
 };
-// Initialize Firebase
+
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
@@ -49,7 +48,11 @@ $(document).ready(function () {
     var term = '';
     var location = '';
     var name = '';
-    geoInitialize()
+    //var city = '';
+    //var longitude;
+    //var latitude;
+    //initMap();   
+    geoInitialize();
 
     // used to display 3:00 for timer div
     // if you change the time in the global variable for the timer, you need to change it here as well
@@ -59,20 +62,19 @@ $(document).ready(function () {
     $("#search").on("click", function (event) {
 
         // part of code that disables button when poll is running.
-        if(isPollRunning === true)
-        {
+        if (isPollRunning === true) {
             console.log("button disabled");
             return;
         }
 
         location = $("#locationInput").val().trim();
+        console.log(location);
         term = $("#termInput").val().trim();
         yelpAPI();
-        geoFirstClick()
-        //console.log(location);
-        //console.log(term);
+        geoFirstClick();
+        event.preventDefault();
     });
-  
+
     //Ajax Call for Yelp API
     function yelpAPI() {
         var queryUrl = "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + term + "&location=" + location;
@@ -89,6 +91,9 @@ $(document).ready(function () {
                     //console.log(response);
                     name = response.name;
                     location = response.location;
+                    // city = response.location.city;
+                    // longitude = response.coordinates.longitude;
+                    // latitude = response.coordinates.latitude;
                     var resultsDiv = $("<div>");
 
                     // checkbox code
@@ -108,12 +113,11 @@ $(document).ready(function () {
 
                     // code that tracks the amount of results selected
                     // checkbox.on click is a call back function
-                    checkbox.on("click", function (event)
-                    {
-                        //this function disables the checkbox onclick event from processing
-                        //data and from removing or adding the map markers
-                        if(isPollRunning === true)
-                        {
+                    checkbox.on("click", function (event) {
+                        // this function disables the checkbox onclick event from processing
+                        // data and from removing or adding the map markers
+
+                        if (isPollRunning === true) {
                             console.log("button disabled");
                             var status = checkbox.prop("checked");
                             checkbox.prop("checked", !status);
@@ -121,28 +125,23 @@ $(document).ready(function () {
                         }
 
                         // console.log("Restaurant selected");
-                        if ($(this).prop("checked") === true)
-                        {
-                            if (resultsSelect >= 3)
-                            {
+                        if ($(this).prop("checked") === true) {
+                            if (resultsSelect >= 3) {
                                 checkbox.prop("checked", false);
                                 // enables Begin Poll button once 3 restaurant options are selected
                                 $("#beginPollBtn").removeClass("opacity-50 cursor-not-allowed");
 
                                 console.log("Max selections already reached.");
                             }
-                            else
-                            {
+                            else {
                                 resultsSelect++;
 
                                 // checks to see if 3 selections have been made. if three selections have 
                                 // been made, then the poll button is enabled.
-                                if(resultsSelect === 3)
-                                {
+                                if (resultsSelect === 3) {
                                     $("#beginPollBtn").removeClass("opacity-50 cursor-not-allowed");
                                 }
-                                else
-                                {
+                                else {
                                     $("#beginPollBtn").addClass("opacity-50 cursor-not-allowed");
 
                                 }
@@ -151,57 +150,50 @@ $(document).ready(function () {
                                 // and added to firebase
                                 var selectionObject =
                                 {
-                                    name:   self.name,
-                                    lng:    self.coordinates.longitude,
-                                    lat:    self.coordinates.latitude,
-                                    addr:   self.location.display_address,
+                                    name: self.name,
+                                    lng: self.coordinates.longitude,
+                                    lat: self.coordinates.latitude,
+                                    addr: self.location.display_address,
                                     rating: self.rating,
-                                    url:    self.url,                                   
+                                    reviewCount: self.review_count,
+                                    //price: self.price,
+                                    phone: self.phone,
+                                    city: self.location.city,
+                                    url: self.url,
                                 };
 
                                 // command that pushes object into selectionArray
                                 selectionArray.push(selectionObject);
-                                //console.log("SelectionArray: " + JSON.stringify(selectionArray));
-                                //console.log(selectionObject);
                                 addMarker(selectionObject);
-
-                                //console.log("Selection added.");
                             }
                         }
-                        else
-                        {
+                        else {
                             resultsSelect--;
                             // disables Begin Poll button until 3 restaurant options are selected
                             $("#beginPollBtn").addClass("opacity-50 cursor-not-allowed");
 
                             // iterates through the array and finds the name of the restaurant 
                             // to be removed.
-                            for(let i = 0; i < selectionArray.length; i++)
-                            {
+                            for (let i = 0; i < selectionArray.length; i++) {
                                 if
-                                (
+                                    (
                                     selectionArray[i].name === self.name &&
-                                    selectionArray[i].lng  === self.coordinates.longitude &&
-                                    selectionArray[i].lat  === self.coordinates.latitude
-                                )
-                                {
+                                    selectionArray[i].lng === self.coordinates.longitude &&
+                                    selectionArray[i].lat === self.coordinates.latitude
+                                ) {
                                     removeMarker(selectionArray[i]);
                                     selectionArray.splice(i, 1);
                                 }
                             }
-                            
-                            //console.log("SelectionArray: " + JSON.stringify(selectionArray));
-                            //console.log("Selection removed.");
-
                         }
-                        //console.log("Selections checked: " + resultsSelect);
                     });
-                    
-                    resultsDiv.attr('class', 'selectedRes border-solid border-2 mt-1 border-black');
+
+                    resultsDiv.attr('class', 'selectedRes rounded border-solid bg-gray-800 text-white border-2 mt-1 border-black');
                     span.append(name);
                     resultsDiv.attr('data-longitude', response.coordinates.longitude);
                     resultsDiv.attr('data-latitude', response.coordinates.latitude);
                     resultsDiv.attr('data-name', response.name);
+                    // chris - changed append to label from nameResult
                     resultsDiv.append(label);
                     $("#results").append(resultsDiv);
 
@@ -211,33 +203,52 @@ $(document).ready(function () {
     }
 
     // function to add a marker to google map
-    function addMarker(selectionObject)
-    {
+    function addMarker(selectionObject) {
         // creates a marker and adds it to google maps
         var thisMarker = new google.maps.Marker
-        ({
-            position: {lat: selectionObject.lat, lng: selectionObject.lng},
-            map: map,
-            title: selectionObject.name
+            ({
+                position: { lat: selectionObject.lat, lng: selectionObject.lng },
+                map: map,
+                title: selectionObject.name,
+                //price: selectionObject.price,
+                rating: selectionObject.rating,
+                reviewCount: selectionObject.reviewCount,
+                city: selectionObject.city
+
+
+            });
+        //adds info window to click.
+        var contentString = '<div id="content">' +
+            '<div id="siteNotice">' +
+            '</div>' +
+            '<h1 id="firstHeading" class="firstHeading">' + selectionObject.name + '</h1>' +
+            '<div id="bodyContent">' +
+            '<ul>'
+        '<li>Rating: ' + selectionObject.rating + '</li>'
+        '<li>Total Reviews: ' + selectionObject.reviewCount + '</li>'
+        '<li>City: ' + selectionObject.city + '</li>';
+
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        thisMarker.addListener('click', function () {
+            infowindow.open(map, thisMarker);
         });
 
         // adds a new marker to the markers array
         markers.push(thisMarker);
-        //console.log(thisMarker);
     }
 
     // function to remove a marker from the map
-    function removeMarker(selectionObject)
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
+    function removeMarker(selectionObject) {
+        for (let i = 0; i < markers.length; i++) {
             if
-            (
+                (
                 markers[i].title === selectionObject.name &&
                 markers[i].position.lat().toFixed(5) === selectionObject.lat.toFixed(5) &&
                 markers[i].position.lng().toFixed(5) === selectionObject.lng.toFixed(5)
-            )
-            {
+            ) {
                 // removes the marker from the map and the marker array.
                 markers[i].setMap(null);
                 markers.splice(i, 1);
@@ -246,10 +257,8 @@ $(document).ready(function () {
     }
 
     // function that deletes all markers from map
-    function removeAllMarkers()
-    {
-        for(let i = 0; i < markers.length; i++)
-        {
+    function removeAllMarkers() {
+        for (let i = 0; i < markers.length; i++) {
             // removes the marker from the map and the marker array.
             markers[i].setMap(null);
         }
@@ -259,27 +268,26 @@ $(document).ready(function () {
 
     //google map API js
 
-      function geoInitialize() {
+    function geoInitialize() {
         // Create a map centered in SLC.
         map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 40.7608, lng: -111.8910 },
-            zoom: 15
+            zoom: 9
         });
     }
-
+    var geoResponse;
     function geoFirstClick(city) {
 
         var geoApiKey = 'AIzaSyCK4EWTo5MHbt_OTstSiYYGKw5twoR8xuk'
         var geoQueryUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + location + '&key=' + geoApiKey;
 
-        //console.log(geoQueryUrl)
 
         $.ajax({
             url: geoQueryUrl,
             method: "GET"
         }).then(function (response) {
 
-            var geoResponse = response.results[0].geometry.location
+            geoResponse = response.results[0].geometry.location
 
             geoFirstClickUpdate(geoResponse)
         });
@@ -288,60 +296,79 @@ $(document).ready(function () {
     function geoFirstClickUpdate(geoResponse) {
         map = new google.maps.Map(document.getElementById('map'), {
             center: geoResponse,
-            zoom: 15
+            zoom: 9
         });
     }
 
-    $("#beginPollBtn").on("click", function (event)
-    {   
+    $("#beginPollBtn").on("click", function (event) {
         // keeps button disabled until three selections are made
-        if (resultsSelect !== 3)
-        {
+        if (resultsSelect !== 3) {
             console.log("button disabled");
             return;
         }
 
-        if (isPollRunning === true)
-        {
+        if (isPollRunning === true) {
             console.log("button disabled");
             return;
         }
 
+        localStorage.setItem("isMaster", "true");
         /********************************************************/
-        // pushes up to firebase and changes boolean to true
         var ref = firebase.database().ref("projectUno");
+        // ref.remove empties out "projectUno" folder that is created in firebase
         ref.remove();
+        
+        // this creates a sub folder within projectUno in FireBase called pollStatus
+        // and pushes up a boolean variable that will allow boolean values to be updated
 
-        database.ref("projectUno/pollStatus").push({isPollRunning: true});
+        // on any computer that is logged on to the webpage.
+        database.ref("projectUno/clearVoteStatus").push("Pizza");
+        database.ref("projectUno/pollStatus").push({ isPollRunning: true });
+        database.ref("projectUno/clearVoteStatus").remove();
+        
+        clearInterval(intervalId);
+        intervalId = setInterval(countDown, 1000);
         /********************************************************/
     });
 
     /************************************************************/
     // pushes up to firebase and changes boolean to false
-    $("#resetPoll").on("click", function (event)
-    {
+    $("#resetPoll").on("click", function (event) {
         var ref = firebase.database().ref("projectUno");
         ref.remove();
 
-        database.ref("projectUno/pollStatus").push({isPollRunning: false});
+        database.ref("projectUno/pollStatus").push({ isPollRunning: false });
     });
     /************************************************************/
 
-    /*****************************************************************************/
-    // this function will make sure that all the reset items hit every computer
-    // this happens because the buttons push to firebase and trigger event listener
-    database.ref("projectUno/pollStatus").on("child_added", function(childSnapshot)
+    database.ref("projectUno/clearVoteStatus").on("child_added", function (childSnapshot)
     {
-        var cs = childSnapshot.val();
+        console.log("made it to fireBase");
+        localStorage.setItem("isVoteCast", "false");
+        localStorage.setItem("votes0", "0");
+        localStorage.setItem("votes1", "0");
+        localStorage.setItem("votes2", "0");
+    });
 
-        if (!cs.isPollRunning)
-        {
+    /*****************************************************************************/
+    // this function controls what happens when the user hits either the start new or begin button
+    // from FireBase
+    database.ref("projectUno/pollStatus").on("child_added", function (childSnapshot) {
+        var cs = childSnapshot.val();
+        database.ref("projectUno/geoData").push(geoResponse);
+        // this statement is run when the user selects reset poll
+        if (!cs.isPollRunning) {
             //console.log("here");
-            isVoteCast = false;
-            votes0 = 0;
-            votes1 = 0;
-            votes2 = 0;
-            time = 179;
+            //isVoteCast = false;
+            localStorage.setItem("isMaster", "false");
+            localStorage.setItem("isVoteCast", "false");
+            localStorage.setItem("votes0", "0");
+            localStorage.setItem("votes1", "0");
+            localStorage.setItem("votes2", "0");
+            //votes0 = 0;
+            //votes1 = 0;
+            //votes2 = 0;
+            time = 180;
             $("#timer").html("3:00");
             isPollRunning = false;
             resultsSelect = 0;
@@ -356,21 +383,61 @@ $(document).ready(function () {
             $("#results").empty();
             clearInterval(intervalId);
         }
-        else
-        {
+        //this statement is run if the user selects the begin poll button
+        else {
+
             isPollRunning = true;
-            clearInterval(intervalId);
-            intervalId = setInterval(countDown, 1000);
+            // clearInterval(intervalId);
+            //intervalId = setInterval(countDown, 1000);
             $("#search").addClass("opacity-50 cursor-not-allowed");
             $("#beginPollBtn").addClass("opacity-50 cursor-not-allowed");
+            database.ref("projectUno/geoData").push(geoResponse);
             // uploads yelp data to firebase in sub-folder called "projectUno/pollChoices"
             database.ref("projectUno/pollChoices").push(selectionArray);
+
         }
     });
-    /*********************************************************************************/
 
-    database.ref("projectUno/pollChoices").on("child_added", function(childSnapshot)
+    database.ref("projectUno/timeData").on("child_added", function (childSnapshot)
     {
+        var csTimeString = childSnapshot.val();
+
+        $("#timer").html(csTimeString.timeString);
+
+        var fireBaseTime = csTimeString.time;
+
+        if (fireBaseTime <= 0) {
+            localStorage.setItem("isMaster", "false");
+            clearInterval(intervalId);
+            $("#timer").html("0:00");
+            console.log("time's up!")
+            voteResult();
+        }
+    });
+
+    /*********************************************************************************/
+    database.ref("projectUno/geoData").on("child_added", function (childSnapshot) {
+
+        var cs = childSnapshot.val();
+        var geoResponselat = cs.lat;
+        var geoResponselng = cs.lng;
+        // var geoResponseAll = { elat+','+geoResponselng }
+        // console.log(geoResponseAll)
+        console.log(geoResponselat)
+        console.log(geoResponselng)
+        console.log(cs.lat)
+        console.log(cs.lng)
+        console.log(geoUpdate)
+        geoUpdate();
+        function geoUpdate() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: geoResponselat, lng: geoResponselng },
+                zoom: 9
+            });
+        }
+    })
+    // this is the child added listener that runs when the begin poll button is clicked
+    database.ref("projectUno/pollChoices").on("child_added", function (childSnapshot) {
         console.log(childSnapshot.val());
 
         var cs = childSnapshot.val();
@@ -395,34 +462,19 @@ $(document).ready(function () {
         var restRating2 = cs[2].rating;
         var restURL2 = cs[2].url;
 
-        // console log information to make sure it displays correctly
-        console.log(restName0);
-        console.log(restAddress0);
-        console.log(restRating0);
-        //console.log(restURL0);
-
-        console.log(restName1);
-        console.log(restAddress1);
-        console.log(restRating1);
-        //console.log(restURL1);
-
-        console.log(restName2);
-        console.log(restAddress2);
-        console.log(restRating2);
-        //console.log(restURL2);
 
         /***********************************/
         // removes markers and then readds to all computers that log in
+
         removeAllMarkers();
 
-        for (let i = 0; i < cs.length; i++)
-        {
+        for (let i = 0; i < cs.length; i++) {
             addMarker(
-            {
-                name: cs[i].name,
-                lng:  cs[i].lng,
-                lat:  cs[i].lat,
-            });
+                {
+                    name: cs[i].name,
+                    lng: cs[i].lng,
+                    lat: cs[i].lat,
+                });
         }
         /*************************************/
 
@@ -432,7 +484,7 @@ $(document).ready(function () {
         var voteRating0 = $("<p>");
         var voteURL0 = $("<p>");
         // variables for tracking votes
-        var voteCount0 = $("<p>").text("Votes: " + votes0);
+        var voteCount0 = $("<p>").text("Votes: " + localStorage.getItem("votes0"));
         voteCount0.attr("id", "voteP0");
 
         var voteButton0 = $("<button>");
@@ -465,7 +517,7 @@ $(document).ready(function () {
         var voteRating1 = $("<p>");
         var voteURL1 = $("<p>");
         //
-        var voteCount1 = $("<p>").text("Votes: " + votes1);
+        var voteCount1 = $("<p>").text("Votes: " + localStorage.getItem("votes1"));
         voteCount1.attr("id", "voteP1");
 
         var voteButton1 = $("<button>");
@@ -487,7 +539,7 @@ $(document).ready(function () {
         voteLabel1.append(voteRating1);
         //voteLabel1.append(voteURL1);
         voteLabel1.append(voteButton1);
-        //
+
         voteLabel1.append(voteCount1);
         voteDiv1.append(voteLabel1);
         $("#pollDiv").append(voteDiv1);
@@ -497,8 +549,8 @@ $(document).ready(function () {
         var voteAddress2 = $("<p>");
         var voteRating2 = $("<p>");
         var voteURL2 = $("<p>");
-        //
-        var voteCount2 = $("<p>").text("Votes: " + votes2);
+
+        var voteCount2 = $("<p>").text("Votes: " + localStorage.getItem("votes2"));
         voteCount2.attr("id", "voteP2");
 
         var voteButton2 = $("<button>");
@@ -525,46 +577,85 @@ $(document).ready(function () {
         voteDiv2.append(voteLabel2);
         $("#pollDiv").append(voteDiv2);
 
-        /************************************************/
-        // code that tracks vote totals
-        $(".voteBtn").on("click", function (event)
+        if (localStorage.getItem("isVoteCast") === "true") 
         {
-            console.log($(this).attr("id"))
-
-            if(isVoteCast)
+            $(".voteBtn").addClass("opacity-50 cursor-not-allowed");
+            if (localStorage.getItem("buttonClicked") == "0")
             {
-                console.log("Button0 Disabled, son")
-                return;
-            }
-
-            // setting boolean to true MUST come after if statement or it won't work
-            isVoteCast = true;
-            $(".voteBtn").addClass("opacity-50 cursor-not-allowed")
-
-            // this refers back to the button click
-            if($(this).attr("id") === "0")
-            {
-                //console.log("clicks still happening0");
-                votes0++;
-                console.log("Votes: " + votes0);
                 $("#voteDiv0").removeClass("bg-blue-200");
                 $("#voteDiv0").addClass("bg-green-200");
             }
 
-            else if($(this).attr("id") === "1")
+            else if (localStorage.getItem("buttonClicked") == "1")
             {
-                //console.log("clicks still happening1");
+                $("#voteDiv1").removeClass("bg-blue-200");
+                $("#voteDiv1").addClass("bg-green-200");
+            }
+
+            else if (localStorage.getItem("buttonClicked") == "2")
+            {
+                $("#voteDiv2").removeClass("bg-blue-200");
+                $("#voteDiv2").addClass("bg-green-200");
+            }
+        }
+
+
+        /************************************************/
+        // code that tracks vote totals
+        $(".voteBtn").on("click", function (event) {
+            console.log($(this).attr("id"))
+
+            localStorage.setItem("buttonClicked", $(this).attr("id"))
+
+            if (localStorage.getItem("isVoteCast") === "true") {
+                console.log("Button0 Disabled, son");
+                return;
+            }
+
+            // setting boolean to true MUST come after if statement or it won't work
+            //isVoteCast = true;
+            localStorage.setItem("isVoteCast", "true");
+            $(".voteBtn").addClass("opacity-50 cursor-not-allowed");
+
+            var votes00 = localStorage.getItem("votes0");
+            var votes01 = localStorage.getItem("votes1");
+            var votes02 = localStorage.getItem("votes2");
+
+            var votes0 = parseInt(votes00);
+            var votes1 = parseInt(votes01);
+            var votes2 = parseInt(votes02);
+
+            // this refers back to the button click
+            if ($(this).attr("id") === "0")
+            {
+            
+                votes0++;
+                console.log("Votes: " + votes0);
+                localStorage.setItem("votes0", votes0);
+
+
+                $("#voteDiv0").removeClass("bg-blue-200");
+                $("#voteDiv0").addClass("bg-green-200");
+            }
+
+            else if ($(this).attr("id") === "1")
+            {
+                
                 votes1++;
                 console.log("Votes: " + votes1);
+                localStorage.setItem("votes1", votes1);
+
                 $("#voteDiv1").removeClass("bg-blue-200");
                 $("#voteDiv1").addClass("bg-green-200");
             }
 
             else
             {
-                //console.log("clicks still happening2");
+                
                 votes2++;
                 console.log("Votes: " + votes2);
+                localStorage.setItem("votes2", votes2);
+
                 $("#voteDiv2").removeClass("bg-blue-200");
                 $("#voteDiv2").addClass("bg-green-200");
             }
@@ -574,20 +665,24 @@ $(document).ready(function () {
             ref2.remove();
 
             // this function grabs the updated vote count and pushes it to firebase
-            database.ref("projectUno/voteCount").push({votes0, votes1, votes2});
+            database.ref("projectUno/voteCount").push({ votes0, votes1, votes2 });
 
         });
         /******************************************************/
+
     });
 
     // this code controls adding the updated vote count to the webpage once it hits firebase and the event listener triggers
-    database.ref("projectUno/voteCount").on("child_added", function(childSnapshot)
-    {
+    database.ref("projectUno/voteCount").on("child_added", function (childSnapshot) {
         var csVote = childSnapshot.val();
-        
-        votes0 = csVote.votes0;
-        votes1 = csVote.votes1;
-        votes2 = csVote.votes2;
+
+        var votes0 = csVote.votes0;
+        var votes1 = csVote.votes1;
+        var votes2 = csVote.votes2;
+
+        localStorage.setItem("votes0", votes0);
+        localStorage.setItem("votes1", votes1);
+        localStorage.setItem("votes2", votes2);
 
         $("#voteP0").text("Votes: " + votes0);
         $("#voteP1").text("Votes: " + votes1);
@@ -597,52 +692,70 @@ $(document).ready(function () {
 });
 
 // function that handles timer when polling is open
-function countDown()
-{
-    $("#timer").html(timeString);
-    //console.log(timeString);
+function countDown() {
+    //$("#timer").html(timeString);
 
-    if(time <= 0)
-    {
-        clearInterval(intervalId);
-        $("#timer").html("0:00");
-        console.log("time's up!")
-        voteResult();
-    }
+    //if (time <= 0) {
+        //clearInterval(intervalId);
+        //$("#timer").html("0:00");
+        //console.log("time's up!")
+        //voteResult();
+    //}
+    //push into firebase that triggers timer.
 
     time--;
+    localStorage.setItem("timerVal", time);
     minutes = Math.trunc(time / 60);
     seconds = time % 60;
-    if (seconds < 10)
-    {
+    if (seconds < 10) {
         seconds = "0" + seconds;
     }
     timeString = minutes + ":" + seconds;
+    console.log("megapizzaparty");
+    database.ref("projectUno/timeData").push({time: time, timeString: timeString});
 }
 
 /**************************************************/
 // function that is called when timer hits 0
-function voteResult()
+function voteResult() 
 {
-    if (votes0 > votes1 && votes0 > votes2)
-    {
+    var votes0 = localStorage.getItem("votes0");
+    var votes1 = localStorage.getItem("votes1");
+    var votes2 = localStorage.getItem("votes2");
+
+    votes0 = parseInt(votes0);
+    votes1 = parseInt(votes1);
+    votes2 = parseInt(votes2);
+
+    if (votes0 > votes1 && votes0 > votes2) {
         $("#voteDiv0").removeClass("bg-blue-200");
         $("#voteDiv0").removeClass("bg-green-200");
         $("#voteDiv0").addClass("bg-red-200");
     }
 
-    else if (votes1 > votes0 && votes1 > votes2)
-    {
+    else if (votes1 > votes0 && votes1 > votes2) {
         $("#voteDiv1").removeClass("bg-blue-200");
         $("#voteDiv1").removeClass("bg-green-200");
         $("#voteDiv1").addClass("bg-red-200");
     }
 
-    else if (votes2 > votes0 && votes2 > votes1)
-    {
+    else if (votes2 > votes0 && votes2 > votes1) {
         $("#voteDiv2").removeClass("bg-blue-200");
         $("#voteDiv2").removeClass("bg-green-200");
         $("#voteDiv2").addClass("bg-red-200");
     }
+
 }
 /******************************************************/
+
+// check to see if master is refreshed when it's sending out the time
+if (localStorage.getItem("isMaster") === "true")
+{
+    console.log("pizzaparty");
+    var tempTime = localStorage.getItem("timerVal");
+    time = parseInt(tempTime);
+    clearInterval(intervalId);
+    intervalId = setInterval(countDown, 1000);
+    
+
+}
