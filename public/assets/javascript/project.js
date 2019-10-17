@@ -17,18 +17,6 @@ var map;
 // boolean that is used to disable checkbox clicks and search button while poll is running
 var isPollRunning = false;
 
-/***********************************************************/
-// boolean that disables voting buttons after a vote is cast
-//var isVoteCast = false;
-
-// variables for incrementing vote count
-//var votes0 = 0;
-//var votes1 = 0;
-//var votes2 = 0;
-/***********************************************************/
-
-// FIREBASE
-// code for loading Firebase
 // Your web app's Firebase configuration
 var firebaseConfig = 
 {
